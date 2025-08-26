@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Tuto ChatLogger</title>
+<style>
+body {
+    background-color:#1e1e1e;
+    color:#f0f0f0;
+    font-family:Consolas, monospace;
+    margin:0; padding:20px;
+}
+h1 {
+    text-align:center;
+    margin-bottom:10px;
+}
+.note {
+    background:#2b2b2b;
+    border-left:5px solid #4caf50;
+    padding:12px;
+    margin:15px 0;
+    border-radius:8px;
+    transition: all 0.2s ease;
+}
+.note:hover { 
+    transform: translateY(-4px); 
+    box-shadow:0 10px 30px rgba(0,0,0,0.6); 
+    background:#151515; 
+    border-left-color:#4caf4f93; 
+}
+.warning {
+    background:#2b2b2b;
+    border-left:5px solid #ff9800;
+    padding:12px;
+    margin:15px 0;
+    border-radius:8px;
+    transition: all 0.2s ease;
+}
+.warning:hover { 
+    transform: translateY(-4px); 
+    box-shadow:0 10px 30px rgba(0,0,0,0.6); 
+    background:#151515; 
+    border-left-color:#ff9900b3; 
+}
+.command {
+    background:#2b2b2b;
+    border:2px solid #a6e22e;
+    padding-top:1px;
+    padding-bottom: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin:15px 0;
+    border-radius:4px;
+    transition: all 0.2s ease;
+}
+.command:hover { 
+    box-shadow:0 10px 30px rgba(0,0,0,0.6); 
+    background:#151515; 
+}
+.sublist {
+    margin-left: 1.5em;
+}
+p {
+    margin:8px 0;
+    line-height:1.5;
+    background:#272822;
+    color:#f8f8f2;
+    padding:12px;
+    border-radius:8px;
+    overflow-x:auto;
+}
+ol {
+    margin:8px 0;
+    line-height:1.5;
+    background:#272822;
+    color:#f8f8f2;
+    padding:12px;
+    border-radius:8px;
+    overflow-x:visible;
+}
+ul {
+    margin:8px 0;
+    line-height:1.5;
+    background:#272822;
+    color:#f8f8f2;
+    padding:12px;
+    border-radius:8px;
+    overflow-x:visible;
+}
+li {
+    margin-left:1.75em;
+}
+pre {
+    background:#272822;
+    color:#f8f8f2;
+    padding:12px;
+    border-radius:8px;
+    overflow-x:auto;
+}
+code {
+    font-family: Consolas, monospace;
+    color:#a6e22e;
+}
+.card {
+    background:#2b2b2b60;
+    padding:20px;
+    margin:20px 0;
+    border-radius:12px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.5);
+}
+.card h2 {
+    margin-top:0;
+    color:#ffffff;
+}
+img.marged {
+    margin-left: 30px;
+    max-width:50%;
+}
+img.centered {
+    max-width:70%;
+}
+div.centered {
+    display: flex;
+    justify-content: right;
+}
+img {
+    margin:20px auto;
+    border-radius:5px;
+    box-shadow:0 0 15px rgba(0,0,0,0.6);
+}
+.btn {
+    display:inline-block;
+    background:#151515;
+    color:#fff;
+    padding:5px 10px;
+    border-radius:8px;
+    text-decoration:none;
+    transition:0.2s ease;
+    cursor: pointer;
+    margin-left:0.5em;
+}
+.btn:hover {
+    background:#000000;
+}
+a {
+    color: #ffffff;
+    text-decoration: none;
+}
+a:visited {
+    color: #ffffff;
+}
+a:hover {
+    color: #c4c4c4;
+}
+a:active {
+    color: #6f6f6f;
+}
+#scrollTopBtn {
+    opacity: 0;
+    pointer-events: none;
+    position: fixed;
+    bottom: 30px;
+    right: 15px;
+    z-index: 100;
+    border: none;
+    outline: none;
+    background-color: #3a3a3a;
+    color: white;
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+    transition: opacity 0.4s ease, transform 0.2s ease;
+}
+#scrollTopBtn.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+#scrollTopBtn:hover {
+    background-color: #5a5a5a;
+    transform: translateY(-3px);
+}
+</style>
+</head>
+<body>
+<h1>⚙️ Installer le ChatLogger pour les Assistants ⚙️</h1>
+<div class="card">
+    <h2>📜 Sommaire</h2>
+    <ol>
+        <li><a href="#prerequis">ℹ️ Pré-requis</a></li>
+        <li><a href="#installation">📦 Installation</a></li>
+        <li><a href="#execution">🚀 Exécuter le ChatLogger</a></li>
+        <li><a href="#configuration">⚙️ Configuration</a></li>
+        <li><a href="#aide">🆘 Aide et Crédits</a></li>
+    </ol>
+</div>
+<div class="card" id="prerequis">
+    <h2>ℹ️ Pré-requis</h2>
+    <p>Il vous faudra plusieurs pré-requis avant de pouvoir exécuter le ChatLogger :</p>
+    <ul>
+        <li>Télécharger les 3 programmes <code>chatlogger.py</code>, <code>FullLogger.py</code> et <code>logs_hub.py</code> ainsi que le fichier <code>requirements.txt</code></li>
+        <li>Installer Python 3.10 ou supérieur</li>
+        <ol class="sublist">
+            <li><a href="https://www.python.org/downloads/" target="_blank">Téléchargez l'installateur Python (Cliquez-moi)</a></li>
+            <li>Ouvrez l'installateur</li>
+            <li>Cliquez sur "Utiliser les droits administrateurs pendant l'installation" et "Ajouter au chemin d'accès" en bas</li>
+            <li>Cliquez sur "Installation Personnalisée"</li>
+            <li>Vérifiez que toutes les cases soient cochées puis appuyez sur "suivant"</li>
+            <li>Cochez "Installer Python 3.XX pour tous les utilisateurs", vérifiez le chemin d'accès puis appuyez sur "Installer"</li>
+            <li>Appuyez sur "Oui" pour autoriser les droits administrateurs</li>
+            <li>Lorsque le bouton "Fermer" apparaît, Python a été installé avec succès</li>
+            <li>Pour vérifier que Python fonctionne bien, vous pouvez appuyer sur votre touche windows, écrire CMD</li>
+            <li>Ouvrez le terminal est exécutez la commande <code class="command">python --version</code><button class="btn" onclick="copyMessage(this)">Copier</button>. Vous devriez voir un message <code>Python 3.XX.XX</code> apparaître.</li>
+            <p class="note"><a href="https://youtube.com/watch?v=mHD_1m7ex94" target="_blank">✅ Conseil : Si besoin, vous pouvez suivre ce Tutoriel pour installer Python sur Windows</a></p>
+        </ol>
+        <li>Enfin, créez un dossier nommé <code>Chat Logger</code> où vous le souhaitez. Il n'y aura ici que les programmes pour le fonctionnement du <code>Chat Logger</code></li>
+    </ul>
+</div>
+<div class="card" id="installation">
+    <h2>📦 Installation</h2>
+    <p class="warning">⚠️ Attention : Vous devez avoir suivi les instructions de la partie Pré-requis avant de pouvoir installer le ChatLogger</p>
+    <p>Pour installer le ChatLogger, vous devez suivre les instructions suivantes :</p>
+    <ul>
+        <li>Placez les 4 fichiers télechargés <code>chatlogger.py</code>, <code>FullLogger.py</code>, <code>logs_hub.py</code> et <code>requirements.txt</code> dans le dossier <code>Chat Logger</code></li>
+        <li>Si vous avez fermé le terminal, rouvrez-le</li>
+        <li>Ouvrez un explorateur de fichiers et rendez-vous dans le dossier <code>Chat Logger</code>. Copiez le chemin d'accès</li>
+        <li>Dans le terminal, exécutez la commande suivante : <code class="command">cd &lt;chemin d'accès&gt;</code><button class="btn" onclick="copyMessage(this)">Copier</button></li>
+        <li>Exécutez la commande suivante : <code class="command">pip install -r requirements.txt</code><button class="btn" onclick="copyMessage(this)">Copier</button></li>
+        <li>Vous pouvez maintenant fermer le terminal</li>
+    </ul>
+</div>
+<div class="card" id="execution">
+    <h2>🚀 Exécuter le ChatLogger</h2>
+    <p class="warning">⚠️ Attention : Vous devez avoir suivi les instructions des parties précédentes avant de pouvoir exécuter le ChatLogger</p>
+    <p>Pour exécuter le ChatLogger, vous devez suivre les instructions suivantes :</p>
+    <ul>
+        <li>Vous allez avoir besoin de créer un fichier .bat qui exécutera votre <code>Chat Logger</code>. Allez sur votre bureau et créez un fichier nommé <code>Chat Logger.bat</code></li>
+        <li>Appuyez sur "Oui" pour modifier l'extension du fichier</li>
+        <li>Faites "Clic droit", "Afficher d'autres options" puis "Modifier"</li>
+        <li>Mettez-y ce code :</li>
+        <p class="sublist"><code class="command">@echo off</code><button class="btn" onclick="copyMessage(this)">Copier</button></p>
+        <p class="sublist"><code class="command">cd /d &lt;chemin d'accès au dossier précédant Chat Logger&gt;</code><button class="btn" onclick="copyMessage(this)">Copier</button></p>
+        <p class="sublist"><code class="command">start "" python "Chat Logger\chatlogger.py"</code><button class="btn" onclick="copyMessage(this)">Copier</button></p>
+        <li>Faites <code>Ctrl + S</code> pour enregistrer puis fermez la fenêtre</li>
+        <li>Vous pouvez maintenant double cliquer sur le fichier pour l'exécuter</li>
+    </ul>
+</div>
+<div class="card" id="configuration">
+    <h2>⚙️ Configuration</h2>
+    <p class="warning">⚠️ Attention : Vous devez avoir suivi les instructions des parties précédentes avant de pouvoir configurer le ChatLogger</p>
+    <p>Pour configurer le ChatLogger, vous devez suivre les instructions suivantes :</p>
+    <ul>
+        <li>Lors de l'exécution du <code>Chat Logger</code>, vous devriez voir ceci :</li>
+        <img class="marged" src="https://i.ibb.co/S4NZWxgV/Chat-Logger-Config-1.png" alt="">
+        <li>Il vous faudra donc trouver le chemin d'accèss du fichier <code>latest.log</code> de Minecraft. Pour ce faire :</li>
+        <ol class="sublist">
+            <li>Appuyez sur les touches de votre clavier <code>Windows + R</code></li>
+            <li>Écrivez ceci (Si vous avez modifié le chemin d'installation de votre Minecraft, mettez le chemin approprié) : <code class="command">%appdata%\.minecraft\logs</code><button class="btn" onclick="copyMessage(this)">Copier</button></li>
+            <li>Appuyez sur "Ok"</li>
+            <li>Sélectionnez le fichier <code>latest.log</code> se situant probablement en bas, faites "clic droit" dessus, puis cliquez sur "Copier en tant que chemin d'accès"</li>
+            <li>Retournez dans le terminal du <code>Chat Logger</code> et collez le chemin d'accès dans la boîte de dialogue en enlevant, s'il y en a, les guillemets <code>(Ctrl + V)</code></li>
+        </ol>
+        <li>Une fois cela fait, vous devriez voir ce message :</li>
+        <img class="marged" src="https://i.ibb.co/1YhFdNNd/Chat-Logger-Config-2.png" alt="">
+        <li>Collez-y le chemin d'accès de l'endroit où vous souhaitez enregistrer vos logs. Si le chemin d'accès n'existe pas, il sera créé automatiquement</li>
+        <li>Appuyez sur "Entrée". Si tout se passe bien, vous devriez voir ceci (Je précise que mes chemins d'accès ne sont que des exemples) :</li>
+        <img class="marged" src="https://i.ibb.co/mrkfgPZZ/Chat-Logger-Config-3.png" alt="">
+    </ul>
+    <p>Votre <code>Chat Logger</code> est maintenant configuré et démarré. Pour l'arrêter, faites <code>Ctrl + C</code>. Vous n'aurez pas besoin de reconfigurer le <code>Chat Logger</code> si vous l'exécutez plus tard. <br> 
+        Vos logs sont enregistrés dans le dossier de sortie. Pour y accéder, allez dans le dossier <code>Chat Logger</code> et ouvrez le fichier <code>logs_index.html</code>.<br>
+        Vous devriez voir une interface comme sur l'image suivante. En cliquand sur <code>View All Logs and Search</code>, vous aurez une interface mise à jour lors du <code>Ctrl + C</code> permettant de rechercher dans tous les logs. <br>
+        En cliquand sur <code>log_XXXX-XX-XX_XX-XX-XX.html</code>, vous verrez le log correspondant, qui est actualisé toutes les 15 secondes si le programme Python <code>Chat Logger</code> tourne. <br>
+        Vous pouvez cliquer sur la petite maison pour revenir au menu principal. Vous pouvez exporter les logs visibles (avec ou sans recherche) au format TXT depuis le <code>View All Logs and Search</code>. En cliquand sur votre tête dans les logs, vous accédez à votre profil Minecraft. <br>
+        Dans les logs, les messages sont triés par <code>catégories</code> automatiquement. Pour ouvrir une <code>catégorie</code>, cliquez simplement dessus. <br>
+        Voici une illustration de ce que vous devriez avoir comme interface si tout fonctionne :
+    </p>
+    <pre><div class="centered"><img class="centered" src="https://i.ibb.co/Lfxv7cQ/Chat-Logger-Config-4.png" alt=""></div></pre>
+    <p class="note">✅ Conseil : Vous pouvez créer un raccourci qui redirige vers le <code>Chat Logger.bat</code> afin d'y mettre un icône et rendre cela plus joli. Vous pouvez ensuite mettre le fichier <code>Chat Logger.bat</code> en invisible et vous ne verrez que le raccourci vers celui-ci</a></p>    
+</div>
+<div class="card" id="aide">
+    <h2>🆘 Aide et Crédits</h2>
+    <p>
+        Pour tout soucis, n'hesitez pas à me contacter sur discord : <bold><code>TurtleSmile</code></bold><br>
+        Ce projet a été réalisé dans le but de se familiariser avec un panel et de pouvoir l'utiliser dans le futur ainsi que d'avoir des logs du Chat de Craftok pour obtenir des preuves lorsque les sanctionnés se plaignent.
+        <br>
+        <br>
+        Merci d'avoir pris le temps de lire ce readme ! <br>
+        Vous pouvez si vous le souhaitez modifier le code du <code>Chat Logger</code> à votre guise, mais ne le distribuez pas à des personnes en dehors du Staff de Craftok.
+
+    </p>
+</div>
+<button onclick="topFunction()" id="scrollTopBtn" title="Remonter en haut">⬆</button>
+<script>
+function copyMessage(button) {
+    // Récupère l'élément <code> juste avant le bouton cliqué
+    const codeElement = button.previousElementSibling;
+    if (!codeElement) return;
+
+    const msg = codeElement.textContent.trim();
+
+    navigator.clipboard.writeText(msg).then(() => {
+        const oldText = button.textContent;
+        button.textContent = "Copié !";
+
+        // Retour après 1 seconde
+        setTimeout(() => {
+        button.textContent = oldText;
+        }, 1000);
+    }).catch(err => console.error("Erreur de copie:", err));
+}
+let mybutton = document.getElementById("scrollTopBtn");
+window.addEventListener("scroll", () => {
+  if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+    mybutton.classList.add("show");
+  } else {
+    mybutton.classList.remove("show");
+  }
+});
+function topFunction() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body></html>
