@@ -7,6 +7,7 @@ from typing import List, Dict, Optional
 
 CONFIG_FILE = r"Chat Logger\\config.json"
 OUTPUT_FILENAME = "logs.html"
+jours_a_verifier = 3
 
 def load_config():
     if os.path.exists(CONFIG_FILE):
@@ -23,7 +24,11 @@ def ask_path(prompt: str, default: str) -> str:
 def find_html_files(folder: str) -> List[str]:
     files = []
     for name in os.listdir(folder):
-        if name.lower().endswith(".html"):
+        dates_a_verifier = [
+            (datetime.datetime.now() - datetime.timedelta(days=i)).strftime("%Y-%m-%d_")
+            for i in range(jours_a_verifier)
+        ]
+        if name.lower().endswith(".html") and  any(date_prefix in name for date_prefix in dates_a_verifier):
             files.append(os.path.join(folder, name))
     files.sort()
     return files
@@ -95,7 +100,7 @@ def aggregate_logs(logs_dir: str, out_path: str):
             e["dt_str"] = dt_str
             all_entries.append(e)
 
-    all_entries.sort(key=lambda x: (x.get("dt") or datetime.datetime.min))
+    all_entries.sort(key=lambda x: (x.get("dt") or datetime.datetime.min), reverse=True)
 
     now = datetime.datetime.now().strftime("%d/%m/%Y à %Hh%M")
     total = len(all_entries)
@@ -165,11 +170,7 @@ body {{ background-color:#1e1e1e;color:#f0f0f0;font-family:Consolas, monospace;m
 <script>
 function parseDTattr(dt) {{
   if (!dt) return null;
-  try {{
-    return new Date(dt.replace(' ', 'T'));
-  }} catch (e) {{
-    return null;
-  }}
+  try {{ return new Date(dt.replace(' ', 'T')); }} catch(e){{ return null; }}
 }}
 
 function exportVisibleTxt() {{
@@ -221,6 +222,10 @@ function applySearch() {{
   const end = document.getElementById('search_end').value;
   const pseudo = document.getElementById('search_pseudo').value.trim().toLowerCase();
   const text = document.getElementById('search_text').value.trim().toLowerCase();
+
+  if (start || end || pseudo || text) {{ window.disablePagination && window.disablePagination(); }}
+  else {{ window.enablePagination && window.enablePagination(); }}
+
 
   try {{
     localStorage.setItem('agg_search_start', start);
@@ -274,6 +279,7 @@ function clearSearch() {{
     localStorage.removeItem('agg_search_text'); 
   }} catch(e){{}} 
   applySearch(); 
+  initPagination(200);
 }}
 
 document.addEventListener('DOMContentLoaded', function() {{
@@ -299,47 +305,92 @@ document.addEventListener('DOMContentLoaded', function() {{
 
   applySearch();
 }});
-let mybutton = document.getElementById("scrollTopBtn");
-
-window.addEventListener("scroll", () => {{
-  if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {{
-    mybutton.classList.add("show");
-  }} else {{
-    mybutton.classList.remove("show");
-  }}
-}});
-
-function topFunction() {{
-  window.scrollTo({{ top: 0, behavior: 'smooth' }});
-}}
-
 function copyMessage(el) {{
   let clone = el.cloneNode(true);
   clone.querySelectorAll("button").forEach(b => b.remove());
-
   let text = (clone.innerText || clone.textContent || "").trim();
-  text = text.replace(/\p{{Extended_Pictographic}}/gu, ""); 
-
+  text = text.replace(/\\p{{Extended_Pictographic}}/gu, "");
   if (!text) return;
   navigator.clipboard.writeText(text).then(() => {{
     el.style.backgroundColor = "#004400";
     setTimeout(() => el.style.backgroundColor = "", 400);
   }}).catch(err => console.error("Erreur de copie:", err));
 }}
+function addCopyButton(msg) {{
+  if(msg.querySelector(".copy-btn")) return;
+  const btn = document.createElement("button");
+  btn.className = "copy-btn";
+  btn.textContent = "📋";
+  btn.style.cssText = "float:right;background:#3a3a3a;border:none;color:#fff;border-radius:50%;cursor:pointer;padding:4px;margin-left:8px;box-shadow:0 4px 6px rgba(0,0,0,0.4);";
+  btn.title = "Copier ce message";
+  btn.addEventListener("click", (e)=>{{ e.stopPropagation(); copyMessage(msg); }});
+  msg.appendChild(btn);
+}}
 
-document.addEventListener("DOMContentLoaded", function() {{
-  document.querySelectorAll(".message").forEach(msg => {{
-    const btn = document.createElement("button");
-    btn.textContent = "📋";
-    btn.style.cssText = "float:right;background:#3a3a3a;border:none;color:#fff;border-radius:50%;cursor:pointer;padding:4px;margin-left:8px;box-shadow:0 4px 6px rgba(0,0,0,0.4);";
-    btn.title = "Copier ce message";
-    btn.addEventListener("click", (e) => {{
-      e.stopPropagation();
-      copyMessage(msg);
-    }});
-    msg.appendChild(btn);
+// ----- PAGINATION -----
+function initPagination(perPage){{
+  window._perPage = perPage || 200;
+  window._renderedCount = 0;
+  window._paginationEnabled = true;
+  window._allMessages = Array.from(document.querySelectorAll('.message'));
+  window._allMessages.forEach(m => m.style.display='none');
+  _renderNextChunk();
+  if(!window._paginationHandlerInstalled){{
+    window._paginationHandlerInstalled=true;
+    window.addEventListener('scroll',()=>{{
+      if(!window._paginationEnabled) return;
+      const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
+      if(nearBottom) _renderNextChunk();
+    }},{{passive:true}});
+  }}
+}}
+
+window._renderNextChunk=function(){{
+  if(!window._allMessages) return;
+  let start = window._renderedCount || 0;
+  if(start >= window._allMessages.length) return;
+  let end = Math.min(start + (window._perPage||500), window._allMessages.length);
+  for(let i=start;i<end;i++){{
+    let msg = window._allMessages[i];
+    msg.style.display='';
+    addCopyButton(msg);
+  }}
+  window._renderedCount=end;
+}};
+
+window.disablePagination=function(){{ window._paginationEnabled=false; }};
+window.enablePagination=function(){{
+  window._paginationEnabled=true;
+  if(!window._allMessages) return;
+  const someVisible = window._allMessages.some(m=>m.style.display!=='none');
+  if(!someVisible){{ window._renderedCount=0; _renderNextChunk(); }}
+}};
+
+document.addEventListener("DOMContentLoaded",()=>{{
+  initPagination(200); 
+  let mybutton = document.getElementById("scrollTopBtn");
+
+  window.addEventListener("scroll", () => {{
+    if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {{
+      mybutton.classList.add("show");
+    }} else {{
+      mybutton.classList.remove("show");
+    }}
   }});
 }});
+
+function topFunction() {{
+  window.scrollTo({{ top: 0, behavior: 'smooth' }});
+
+  function check() {{
+    if (window.scrollY === 0) {{
+      clearSearch();
+    }} else {{
+      requestAnimationFrame(check);
+    }}
+  }}
+  requestAnimationFrame(check);
+}}
 </script>
 </head>
 <body>
